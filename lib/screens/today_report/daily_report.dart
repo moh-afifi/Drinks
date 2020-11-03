@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../reusables/reusable_report_card.dart';
-import 'package:dbdob/widgets/total_sum_card.dart';
+import '../../reusables/reusable_report_card.dart';
+import 'package:dbdob/reusables/total_sum_card.dart';
 
 class DailyReport extends StatefulWidget {
   DailyReport({this.date});
@@ -57,7 +57,9 @@ class _DailyReportState extends State<DailyReport> {
               mintSum = 0,
               talkemaSum = 0,
               milkySum = 0,
-              juiceSum = 0;
+              juiceSum = 0,
+              greenSum=0,
+              goldSum=0;
 
           List<int> teaList = [];
           List<int> nescafeList = [];
@@ -74,6 +76,9 @@ class _DailyReportState extends State<DailyReport> {
           List<int> talkemaList = [];
           List<int> milkyList = [];
           List<int> juiceList = [];
+
+          List<int> greenList = [];
+          List<int> goldList = [];
 
           for (var item in items) {
             type = item.data['type'];
@@ -125,6 +130,15 @@ class _DailyReportState extends State<DailyReport> {
               juiceList.add(quantity);
               juiceSum = juiceList.reduce((a, b) => a + b);
             }
+
+            else if (type == 'شاى أخضر') {
+              greenList.add(quantity);
+              greenSum = greenList.reduce((a, b) => a + b);
+            }
+            else if (type == 'نسكافيه جولد') {
+              goldList.add(quantity);
+              goldSum = goldList.reduce((a, b) => a + b);
+            }
           }
           totalSum = teaSum * 3 +
               nescafeSum * 4 +
@@ -135,16 +149,17 @@ class _DailyReportState extends State<DailyReport> {
               karkSum * 3.5 +
               yanSum * 3.5 +
               mintSum * 3.5 +
-              waterSum * 3 +
+              waterSum * 4 +
               teaMilkSum * 5 +
               nescafeMilkSum * 5 +
               talkemaSum * 5 +
               milkySum * 5 +
-              juiceSum * 5;
+              juiceSum * 5
+              + greenSum*3.5+goldSum*4;
 //----------------------------------------------------------------------------
           final sumCard = TotalSumCard(
             totalSum: totalSum,
-              label:"الاجمالي"
+              label:" : الاجمالي"
           );
 
           final teaCard = (teaSum == 0)
@@ -225,7 +240,7 @@ class _DailyReportState extends State<DailyReport> {
                   isInt: true,
                   type: 'مياه',
                   quantity: waterSum,
-                  intPrice: (waterSum * 3),
+                  intPrice: (waterSum * 4),
                 );
           final teaMilkCard = (teaMilkSum == 0)
               ? SizedBox()
@@ -266,6 +281,23 @@ class _DailyReportState extends State<DailyReport> {
             type: 'عصير',
             quantity: juiceSum,
             intPrice: (juiceSum * 5),
+          );
+
+          final greenCard = (greenSum == 0)
+              ? SizedBox()
+              : ReportCard(
+            isInt: false,
+            type: 'شاى أخضر',
+            quantity: greenSum,
+            doublePrice: (greenSum * 3.5),
+          );
+          final goldCard = (goldSum == 0)
+              ? SizedBox()
+              : ReportCard(
+            isInt: true,
+            type: 'نسكافيه جولد',
+            quantity: goldSum,
+            intPrice: (goldSum * 4),
           );
 //-------------------------------------------------------------------------
           return (totalSum == 0)
@@ -310,7 +342,9 @@ class _DailyReportState extends State<DailyReport> {
                     waterCard,
                     talkemaCard,
                     milkyCard,
-                    juiceCard
+                    juiceCard,
+                    greenCard,
+                    goldCard
                   ],
                 );
         },

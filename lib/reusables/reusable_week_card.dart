@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-
 class ReusableWeekCard extends StatelessWidget {
-  ReusableWeekCard({this.label,this.onTap});
+  ReusableWeekCard({this.label, this.onTap, this.icon});
   final String label;
   final Function onTap;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +13,24 @@ class ReusableWeekCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(15.0),
         child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-                fontSize: 35,
-                color: Colors.white,
-                fontWeight: FontWeight.bold),
-          ),
-        ),
-        height: 100.0,
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 45.0,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                  fontSize: 23,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        )),
+        height: 75.0,
         width: 300,
         //margin: const EdgeInsets.only(bottom: 6.0), //Same as `blurRadius` i guess
         decoration: BoxDecoration(

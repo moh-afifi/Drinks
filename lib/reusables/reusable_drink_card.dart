@@ -18,12 +18,15 @@ class ReusableCard extends StatelessWidget {
                 height: 100,
                 width: 120,
               ),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.purple,
-                  fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.purple,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               )
             ],

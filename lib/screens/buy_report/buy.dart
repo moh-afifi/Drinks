@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:dbdob/reusables/reusable_drink_card.dart';
-import 'package:dbdob/widgets/make_order_dialog.dart';
-import 'today_report/today_report.dart';
+import 'package:dbdob/widgets/make_buy_dialog.dart';
+import 'package:dbdob/widgets/make_clean_dialog.dart';
 
-class Home extends StatefulWidget {
+class Buy extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _BuyState createState() => _BuyState();
 }
 
-class _HomeState extends State<Home> {
+class _BuyState extends State<Buy> {
   //--------------------------------------------------------------
   void makeOrder(String type) {
     showDialog(
         context: context,
-        builder: (BuildContext context) => MakeOrderDialog(
+        builder: (BuildContext context) => MakeBuyDialog(
               type: type,
             ));
   }
+
+  void makeCleanOrder(String type) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CleanMakeDialog(
+              type: type,
+            ));
+  }
+
 //----------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
@@ -27,25 +36,11 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.purple,
           centerTitle: true,
           title: Text(
-            'المـشـروبـات',
+            'المشتريات',
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.receipt,
-              size: 50,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TodayReport(),
-                ),
-              );
-            },
           ),
         ),
       ),
@@ -58,15 +53,15 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   ReusableCard(
-                    imagePath: 'images/tea2.jpg',
-                    label: 'شــــــاى',
+                    imagePath: 'images/tea-box.jpg',
+                    label: 'شـاى 1/4',
                     onTap: () {
                       makeOrder('شاى');
                     },
                   ),
                   ReusableCard(
-                    imagePath: 'images/coffee4.jpg',
-                    label: 'قهوة',
+                    imagePath: 'images/coffee-box.jpg',
+                    label: 'كيلو قهوة',
                     onTap: () {
                       makeOrder("قهوة");
                     },
@@ -135,25 +130,6 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   ReusableCard(
-                    imagePath: 'images/tea-milk.jpg',
-                    label: 'شاى بلبن',
-                    onTap: () {
-                      makeOrder("شاى بلبن");
-                    },
-                  ),
-                  ReusableCard(
-                    imagePath: 'images/nescafe-milk.jpg',
-                    label: 'نسكافيه بلبن',
-                    onTap: () {
-                      makeOrder("نسكافيه بلبن");
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ReusableCard(
                     imagePath: 'images/yans.jpg',
                     label: 'ينسون',
                     onTap: () {
@@ -180,7 +156,7 @@ class _HomeState extends State<Home> {
                     },
                   ),
                   ReusableCard(
-                    imagePath: 'images/water2.jpg',
+                    imagePath: 'images/water-box.jpg',
                     label: 'مياه',
                     onTap: () {
                       makeOrder("مياه");
@@ -199,10 +175,10 @@ class _HomeState extends State<Home> {
                     },
                   ),
                   ReusableCard(
-                    imagePath: 'images/green.jpg',
-                    label: 'شاى أخضر',
+                    imagePath: 'images/milk.jpg',
+                    label: '1/2 لبن بودرة',
                     onTap: () {
-                      makeOrder("شاى أخضر");
+                      makeOrder("لبن بودرة");
                     },
                   ),
                 ],
@@ -211,10 +187,49 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   ReusableCard(
+                    imagePath: 'images/sugar.jpeg',
+                    label: 'سكر',
+                    onTap: () {
+                      makeOrder("سكر");
+                    },
+                  ),
+                  ReusableCard(
                     imagePath: 'images/gold2.jpg',
                     label: 'نسكافيه جولد',
                     onTap: () {
                       makeOrder("نسكافيه جولد");
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ReusableCard(
+                    imagePath: 'images/cup-tea.jpg',
+                    label: 'دستة كبير',
+                    onTap: () {
+                      makeOrder("كوب كبير");
+                    },
+                  ),
+                  ReusableCard(
+                    imagePath: 'images/cup-coffee.jpg',
+                    label: 'دستة صغير',
+                    onTap: () {
+                      makeOrder("كوب صغير");
+                    },
+                  ),
+                ],
+              ),
+              //----------------------------------------
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ReusableCard(
+                    imagePath: 'images/clean.jpg',
+                    label: 'مصروفات إدارية',
+                    onTap: () {
+                      makeCleanOrder("ادوات نظافة");
                     },
                   ),
                 ],

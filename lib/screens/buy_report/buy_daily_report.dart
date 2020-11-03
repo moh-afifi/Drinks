@@ -1,38 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../reusables/reusable_report_card.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:dbdob/reusables/total_sum_card.dart';
+import 'package:dbdob/reusables/clean_report_card.dart';
+import 'package:dbdob/widgets/clean_desc.dart';
 
-class TodayReport extends StatefulWidget {
+class BuyDailyReport extends StatefulWidget {
+  BuyDailyReport({this.date});
+  final String date;
   @override
-  _TodayReportState createState() => _TodayReportState();
+  _BuyDailyReportState createState() => _BuyDailyReportState();
 }
 
-class _TodayReportState extends State<TodayReport> {
+class _BuyDailyReportState extends State<BuyDailyReport> {
   final _fireStore = Firestore.instance;
   String type;
-  int quantity, price;
-  String date;
+  int quantity;
   double totalSum = 0;
-
-  getDate() {
-    initializeDateFormatting("en", null).then((_) {
-      var now = DateTime.now();
-      var formatter = DateFormat('d-M-y');
-      setState(() {
-        date = formatter.format(now);
-      });
-    });
+  double cleanPrice = 0;
+  double descPrice = 0;
+  String desc;
+  List<Widget> descList = [];
+  //-------------------------------------------------------
+  void cleanStream() async {
+    await for (var snapshot
+        in _fireStore.collection('${widget.date} clean').snapshots()) {
+      for (var message in snapshot.documents) {
+        cleanPrice += message.data['price'];
+        desc = message.data['desc'];
+        descPrice = message.data['price'];
+        var descCard = (desc == null)
+            ? SizedBox()
+            : CleanDesc(
+                desc: desc,
+                descPrice: descPrice,
+              );
+        descList.add(descCard);
+      }
+    }
   }
 
+  //-----------------------------------------------------
   @override
   void initState() {
-    getDate();
+    cleanStream();
     super.initState();
   }
 
+  //-----------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +55,7 @@ class _TodayReportState extends State<TodayReport> {
         backgroundColor: Colors.purple,
         centerTitle: true,
         title: Text(
-          'التقرير اليومي',
+          widget.date,
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -48,7 +63,7 @@ class _TodayReportState extends State<TodayReport> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _fireStore.collection('$date').snapshots(),
+        stream: _fireStore.collection('${widget.date} buy').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -60,6 +75,25 @@ class _TodayReportState extends State<TodayReport> {
 //------------------------------------------------------------------------
           final items = snapshot.data.documents;
 
+          double teaPrice = 0,
+              nescafePrice = 0,
+              coffeePrice = 0,
+              blackPrice = 0,
+              mixPrice = 0,
+              bonjPrice = 0,
+              waterPrice = 0,
+              karkPrice = 0,
+              yanPrice = 0,
+              mintPrice = 0,
+              talkemaPrice = 0,
+              milkyPrice = 0,
+              juicePrice = 0,
+              powderPrice = 0,
+              goldPrice = 0,
+              sugarPrice = 0,
+              cupSmallPrice = 0,
+              cupLargePrice = 0;
+          //----------------------------------------------
           int teaSum = 0,
               nescafeSum = 0,
               coffeeSum = 0,
@@ -67,17 +101,18 @@ class _TodayReportState extends State<TodayReport> {
               mixSum = 0,
               bonjSum = 0,
               waterSum = 0,
-              teaMilkSum = 0,
-              nescafeMilkSum = 0,
+              powderSum = 0,
               karkSum = 0,
               yanSum = 0,
               mintSum = 0,
               talkemaSum = 0,
               milkySum = 0,
               juiceSum = 0,
-              greenSum = 0,
-              goldSum = 0;
-
+              goldSum = 0,
+              sugarSum = 0,
+              cupSmallSum = 0,
+              cupLargeSum = 0;
+          //----------------------------------------------
           List<int> teaList = [];
           List<int> nescafeList = [];
           List<int> coffeeList = [];
@@ -88,230 +123,268 @@ class _TodayReportState extends State<TodayReport> {
           List<int> yanList = [];
           List<int> mintList = [];
           List<int> waterList = [];
-          List<int> teaMilkList = [];
-          List<int> nescafeMilkList = [];
           List<int> talkemaList = [];
           List<int> milkyList = [];
           List<int> juiceList = [];
-          List<int> greenList = [];
+          List<int> powderList = [];
           List<int> goldList = [];
-
+          List<int> sugarList = [];
+          List<int> cupSmallList = [];
+          List<int> cupLargeList = [];
+          //------------------------------------------------
           for (var item in items) {
             type = item.data['type'];
             quantity = item.data['quantity'];
 
             if (type == 'شاى') {
+              teaPrice += item.data['price'];
               teaList.add(quantity);
               teaSum = teaList.reduce((a, b) => a + b);
             } else if (type == 'نسكافيه') {
+              nescafePrice += item.data['price'];
               nescafeList.add(quantity);
               nescafeSum = nescafeList.reduce((a, b) => a + b);
             } else if (type == 'نسكافيه بلاك') {
+              blackPrice += item.data['price'];
               blackList.add(quantity);
               blackSum = blackList.reduce((a, b) => a + b);
             } else if (type == 'بونجورنو') {
+              bonjPrice += item.data['price'];
               bonjList.add(quantity);
               bonjSum = bonjList.reduce((a, b) => a + b);
             } else if (type == 'كوفي ميكس') {
+              mixPrice += item.data['price'];
               mixList.add(quantity);
               mixSum = mixList.reduce((a, b) => a + b);
             } else if (type == 'ينسون') {
+              yanPrice += item.data['price'];
               yanList.add(quantity);
               yanSum = yanList.reduce((a, b) => a + b);
             } else if (type == 'كركديه') {
+              karkPrice += item.data['price'];
               karkList.add(quantity);
               karkSum = karkList.reduce((a, b) => a + b);
             } else if (type == 'نعناع') {
+              mintPrice += item.data['price'];
               mintList.add(quantity);
               mintSum = mintList.reduce((a, b) => a + b);
             } else if (type == 'مياه') {
+              waterPrice += item.data['price'];
               waterList.add(quantity);
               waterSum = waterList.reduce((a, b) => a + b);
             } else if (type == 'قهوة') {
+              coffeePrice += item.data['price'];
               coffeeList.add(quantity);
               coffeeSum = coffeeList.reduce((a, b) => a + b);
-            } else if (type == 'شاى بلبن') {
-              teaMilkList.add(quantity);
-              teaMilkSum = teaMilkList.reduce((a, b) => a + b);
-            } else if (type == 'نسكافيه بلبن') {
-              nescafeMilkList.add(quantity);
-              nescafeMilkSum = nescafeMilkList.reduce((a, b) => a + b);
             } else if (type == 'تلقيمة') {
+              talkemaPrice += item.data['price'];
               talkemaList.add(quantity);
               talkemaSum = talkemaList.reduce((a, b) => a + b);
             } else if (type == '3x1 لبن') {
+              milkyPrice += item.data['price'];
               milkyList.add(quantity);
               milkySum = milkyList.reduce((a, b) => a + b);
             } else if (type == 'عصير') {
+              juicePrice += item.data['price'];
               juiceList.add(quantity);
               juiceSum = juiceList.reduce((a, b) => a + b);
-            } else if (type == 'شاى أخضر') {
-              greenList.add(quantity);
-              greenSum = greenList.reduce((a, b) => a + b);
+            } else if (type == 'لبن بودرة') {
+              powderPrice += item.data['price'];
+              powderList.add(quantity);
+              powderSum = powderList.reduce((a, b) => a + b);
             } else if (type == 'نسكافيه جولد') {
+              goldPrice += item.data['price'];
               goldList.add(quantity);
               goldSum = goldList.reduce((a, b) => a + b);
+            } else if (type == 'سكر') {
+              sugarPrice += item.data['price'];
+              sugarList.add(quantity);
+              sugarSum = sugarList.reduce((a, b) => a + b);
+            } else if (type == 'كوب صغير') {
+              cupSmallPrice += item.data['price'];
+              cupSmallList.add(quantity);
+              cupSmallSum = cupSmallList.reduce((a, b) => a + b);
+            } else if (type == 'كوب كبير') {
+              cupLargePrice += item.data['price'];
+              cupLargeList.add(quantity);
+              cupLargeSum = cupLargeList.reduce((a, b) => a + b);
             }
-            //----------------------------------------------------
           }
-          totalSum = teaSum * 3 +
-              nescafeSum * 4 +
-              coffeeSum * 5 +
-              blackSum * 3 +
-              mixSum * 4 +
-              bonjSum * 6 +
-              karkSum * 3.5 +
-              yanSum * 3.5 +
-              mintSum * 3.5 +
-              waterSum * 4 +
-              teaMilkSum * 5 +
-              nescafeMilkSum * 5 +
-              talkemaSum * 5 +
-              milkySum * 5 +
-              juiceSum * 5 +
-              greenSum * 3.5 +
-              goldSum * 4;
-
-//          insertTotal();
+          totalSum = teaPrice +
+              nescafePrice +
+              coffeePrice +
+              blackPrice +
+              mixPrice +
+              bonjPrice +
+              waterPrice +
+              karkPrice +
+              yanPrice +
+              mintPrice +
+              talkemaPrice +
+              milkyPrice +
+              goldPrice +
+              sugarPrice +
+              cupSmallPrice +
+              cupLargePrice +
+              juicePrice +
+              powderPrice +
+              cleanPrice;
 //----------------------------------------------------------------------------
           final sumCard =
               TotalSumCard(totalSum: totalSum, label: " : الاجمالي");
 
-          final teaCard = (teaSum == 0)
+          final teaCard = (teaPrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: 'شاى',
                   quantity: teaSum,
-                  intPrice: (teaSum * 3),
+                  doublePrice: teaPrice,
                 );
-          final nescafeCard = (nescafeSum == 0)
+          final nescafeCard = (nescafePrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: ' 3x1 نسكافيه',
                   quantity: nescafeSum,
-                  intPrice: (nescafeSum * 4),
+                  doublePrice: nescafePrice,
                 );
-          final coffeeCard = (coffeeSum == 0)
+          final coffeeCard = (coffeePrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: 'قهوة',
                   quantity: coffeeSum,
-                  intPrice: (coffeeSum * 5),
+                  doublePrice: coffeePrice,
                 );
-          final blackCard = (blackSum == 0)
+          final blackCard = (blackPrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: 'نسكافيه بلاك',
                   quantity: blackSum,
-                  intPrice: (blackSum * 3),
+                  doublePrice: blackPrice,
                 );
-          final mixCard = (mixSum == 0)
+          final mixCard = (mixPrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: 'coffee mix',
                   quantity: mixSum,
-                  intPrice: (mixSum * 4),
+                  doublePrice: mixPrice,
                 );
-          final bonjCard = (bonjSum == 0)
+          final bonjCard = (bonjPrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
                   type: 'بونجورنو',
                   quantity: bonjSum,
-                  intPrice: (bonjSum * 6),
+                  doublePrice: bonjPrice,
                 );
-          final yansCard = (yanSum == 0)
+          final yansCard = (yanPrice == 0)
               ? SizedBox()
               : ReportCard(
                   isInt: false,
                   type: 'ينسون',
                   quantity: yanSum,
-                  doublePrice: yanSum * 3.5,
+                  doublePrice: yanPrice,
                 );
-          final karkCard = (karkSum == 0)
+          final karkCard = (karkPrice == 0)
               ? SizedBox()
               : ReportCard(
                   isInt: false,
                   type: 'كركديه',
                   quantity: karkSum,
-                  doublePrice: karkSum * 3.5,
+                  doublePrice: karkPrice,
                 );
-          final mintCard = (mintSum == 0)
+          final mintCard = (mintPrice == 0)
               ? SizedBox()
               : ReportCard(
                   isInt: false,
                   type: 'نعناع',
                   quantity: mintSum,
-                  doublePrice: mintSum * 3.5,
+                  doublePrice: mixPrice,
                 );
-          final waterCard = (waterSum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: 'مياه',
-                  quantity: waterSum,
-                  intPrice: (waterSum * 4),
-                );
-          final teaMilkCard = (teaMilkSum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: 'شاى بلبن',
-                  quantity: teaMilkSum,
-                  intPrice: (teaMilkSum * 5),
-                );
-          final nescafeMilkCard = (nescafeMilkSum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: 'نسكافيه بلبن',
-                  quantity: nescafeMilkSum,
-                  intPrice: (nescafeMilkSum * 5),
-                );
-          final talkemaCard = (talkemaSum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: 'تلقيمة',
-                  quantity: talkemaSum,
-                  intPrice: (talkemaSum * 5),
-                );
-          final milkyCard = (milkySum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: '3x1 لبن',
-                  quantity: milkySum,
-                  intPrice: (milkySum * 5),
-                );
-          final juiceCard = (juiceSum == 0)
-              ? SizedBox()
-              : ReportCard(
-                  isInt: true,
-                  type: 'عصير',
-                  quantity: juiceSum,
-                  intPrice: (juiceSum * 5),
-                );
-          final greenCard = (greenSum == 0)
+          final waterCard = (waterPrice == 0)
               ? SizedBox()
               : ReportCard(
                   isInt: false,
-                  type: 'شاى أخضر',
-                  quantity: greenSum,
-                  doublePrice: (greenSum * 3.5),
+                  type: 'مياه',
+                  quantity: waterSum,
+                  doublePrice: waterPrice,
                 );
-          final goldCard = (goldSum == 0)
+          final talkemaCard = (talkemaPrice == 0)
               ? SizedBox()
               : ReportCard(
-                  isInt: true,
+                  isInt: false,
+                  type: 'تلقيمة',
+                  quantity: talkemaSum,
+                  doublePrice: talkemaPrice,
+                );
+          final milkyCard = (milkyPrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: '3x1 لبن',
+                  quantity: milkySum,
+                  doublePrice: milkyPrice,
+                );
+          final juiceCard = (juicePrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'عصير',
+                  quantity: juiceSum,
+                  doublePrice: juicePrice,
+                );
+          final powderCard = (powderPrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'لبن بودرة',
+                  quantity: powderSum,
+                  doublePrice: powderPrice,
+                );
+//---------------------------------------------------------------
+          final goldCard = (goldPrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
                   type: 'نسكافيه جولد',
                   quantity: goldSum,
-                  intPrice: (goldSum * 4),
+                  doublePrice: goldPrice,
+                );
+          final sugarCard = (sugarPrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'سكر',
+                  quantity: sugarSum,
+                  doublePrice: sugarPrice,
+                );
+          final cupSmallCard = (cupSmallPrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'دستة كوب صغير',
+                  quantity: cupSmallSum,
+                  doublePrice: cupSmallPrice,
+                );
+          final cupLargeCard = (cupLargePrice == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'دستة كوب كبير',
+                  quantity: cupLargeSum,
+                  doublePrice: cupLargePrice,
+                );
+
+          final cleanCard = (cleanPrice == 0)
+              ? SizedBox()
+              : CleanReportCard(
+                  type: 'مصاريف إدارية',
+                  price: cleanPrice,
+                  descList: descList,
                 );
 //-------------------------------------------------------------------------
           return (totalSum == 0)
@@ -329,7 +402,7 @@ class _TodayReportState extends State<TodayReport> {
                         ),
                       ),
                       Text(
-                        'لا توجد مبيعات حتى الآن',
+                        'لا توجد مشتريات',
                         style: TextStyle(
                             fontSize: 25,
                             color: Colors.purple,
@@ -347,8 +420,6 @@ class _TodayReportState extends State<TodayReport> {
                     coffeeCard,
                     blackCard,
                     mixCard,
-                    teaMilkCard,
-                    nescafeMilkCard,
                     bonjCard,
                     karkCard,
                     yansCard,
@@ -357,8 +428,12 @@ class _TodayReportState extends State<TodayReport> {
                     talkemaCard,
                     milkyCard,
                     juiceCard,
-                    greenCard,
-                    goldCard
+                    powderCard,
+                    goldCard,
+                    sugarCard,
+                    cupSmallCard,
+                    cupLargeCard,
+                    cleanCard
                   ],
                 );
         },

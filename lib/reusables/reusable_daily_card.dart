@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dbdob/screens/daily_report.dart';
-import 'package:dbdob/screens/host_daily_report.dart';
+import 'package:dbdob/screens/today_report/daily_report.dart';
+import 'package:dbdob/screens/host_report/host_daily_report.dart';
 class ReusableDailyCard extends StatelessWidget {
   ReusableDailyCard({this.date,this.price,this.host});
   final String date;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../reusables/reusable_report_card.dart';
-import 'package:dbdob/widgets/total_sum_card.dart';
+import '../../reusables/reusable_report_card.dart';
+import 'package:dbdob/reusables/total_sum_card.dart';
 
 class HostDailyReport extends StatefulWidget {
   HostDailyReport({this.date});
@@ -57,7 +57,9 @@ class _HostDailyReportState extends State<HostDailyReport> {
               mintSum = 0,
               talkemaSum = 0,
               milkySum = 0,
-              juiceSum = 0;
+              juiceSum = 0,
+              greenSum = 0,
+              goldSum = 0;
 
           List<int> teaList = [];
           List<int> nescafeList = [];
@@ -74,6 +76,8 @@ class _HostDailyReportState extends State<HostDailyReport> {
           List<int> talkemaList = [];
           List<int> milkyList = [];
           List<int> juiceList = [];
+          List<int> greenList = [];
+          List<int> goldList = [];
 
           for (var item in items) {
             type = item.data['type'];
@@ -124,6 +128,12 @@ class _HostDailyReportState extends State<HostDailyReport> {
             } else if (type == 'عصير') {
               juiceList.add(quantity);
               juiceSum = juiceList.reduce((a, b) => a + b);
+            } else if (type == 'شاى أخضر') {
+              greenList.add(quantity);
+              greenSum = greenList.reduce((a, b) => a + b);
+            } else if (type == 'نسكافيه جولد') {
+              goldList.add(quantity);
+              goldSum = goldList.reduce((a, b) => a + b);
             }
           }
           totalSum = teaSum * 3 +
@@ -135,184 +145,201 @@ class _HostDailyReportState extends State<HostDailyReport> {
               karkSum * 3.5 +
               yanSum * 3.5 +
               mintSum * 3.5 +
-              waterSum * 3 +
+              waterSum * 4 +
               teaMilkSum * 5 +
               nescafeMilkSum * 5 +
               talkemaSum * 5 +
               milkySum * 5 +
-              juiceSum * 5;
+              juiceSum * 5 +
+              greenSum * 3.5 +
+              goldSum * 4;
 //----------------------------------------------------------------------------
-          final sumCard = TotalSumCard(
-            totalSum: totalSum,
-              label:"الاجمالي"
-          );
+          final sumCard = TotalSumCard(totalSum: totalSum, label: " : الاجمالي");
 
           final teaCard = (teaSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'شاى',
-            quantity: teaSum,
-            intPrice: (teaSum * 3),
-          );
+                  isInt: true,
+                  type: 'شاى',
+                  quantity: teaSum,
+                  intPrice: (teaSum * 3),
+                );
           final nescafeCard = (nescafeSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: ' 3x1 نسكافيه',
-            quantity: nescafeSum,
-            intPrice: (nescafeSum * 4),
-          );
+                  isInt: true,
+                  type: ' 3x1 نسكافيه',
+                  quantity: nescafeSum,
+                  intPrice: (nescafeSum * 4),
+                );
           final coffeeCard = (coffeeSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'قهوة',
-            quantity: coffeeSum,
-            intPrice: (coffeeSum * 5),
-          );
+                  isInt: true,
+                  type: 'قهوة',
+                  quantity: coffeeSum,
+                  intPrice: (coffeeSum * 5),
+                );
           final blackCard = (blackSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'نسكافيه بلاك',
-            quantity: blackSum,
-            intPrice: (blackSum * 3),
-          );
+                  isInt: true,
+                  type: 'نسكافيه بلاك',
+                  quantity: blackSum,
+                  intPrice: (blackSum * 3),
+                );
           final mixCard = (mixSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'coffee mix',
-            quantity: mixSum,
-            intPrice: (mixSum * 4),
-          );
+                  isInt: true,
+                  type: 'coffee mix',
+                  quantity: mixSum,
+                  intPrice: (mixSum * 4),
+                );
           final bonjCard = (bonjSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'بونجورنو',
-            quantity: bonjSum,
-            intPrice: (bonjSum * 6),
-          );
+                  isInt: true,
+                  type: 'بونجورنو',
+                  quantity: bonjSum,
+                  intPrice: (bonjSum * 6),
+                );
           final yansCard = (yanSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: false,
-            type: 'ينسون',
-            quantity: yanSum,
-            doublePrice: yanSum * 3.5,
-          );
+                  isInt: false,
+                  type: 'ينسون',
+                  quantity: yanSum,
+                  doublePrice: yanSum * 3.5,
+                );
           final karkCard = (karkSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: false,
-            type: 'كركديه',
-            quantity: karkSum,
-            doublePrice: karkSum * 3.5,
-          );
+                  isInt: false,
+                  type: 'كركديه',
+                  quantity: karkSum,
+                  doublePrice: karkSum * 3.5,
+                );
           final mintCard = (mintSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: false,
-            type: 'نعناع',
-            quantity: mintSum,
-            doublePrice: mintSum * 3.5,
-          );
+                  isInt: false,
+                  type: 'نعناع',
+                  quantity: mintSum,
+                  doublePrice: mintSum * 3.5,
+                );
           final waterCard = (waterSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'مياه',
-            quantity: waterSum,
-            intPrice: (waterSum * 3),
-          );
+                  isInt: true,
+                  type: 'مياه',
+                  quantity: waterSum,
+                  intPrice: (waterSum * 4),
+                );
           final teaMilkCard = (teaMilkSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'شاى بلبن',
-            quantity: teaMilkSum,
-            intPrice: (teaMilkSum * 5),
-          );
+                  isInt: true,
+                  type: 'شاى بلبن',
+                  quantity: teaMilkSum,
+                  intPrice: (teaMilkSum * 5),
+                );
           final nescafeMilkCard = (nescafeMilkSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'نسكافيه بلبن',
-            quantity: nescafeMilkSum,
-            intPrice: (nescafeMilkSum * 5),
-          );
+                  isInt: true,
+                  type: 'نسكافيه بلبن',
+                  quantity: nescafeMilkSum,
+                  intPrice: (nescafeMilkSum * 5),
+                );
           final talkemaCard = (talkemaSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'تلقيمة',
-            quantity: talkemaSum,
-            intPrice: (talkemaSum * 5),
-          );
+                  isInt: true,
+                  type: 'تلقيمة',
+                  quantity: talkemaSum,
+                  intPrice: (talkemaSum * 5),
+                );
           final milkyCard = (milkySum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: '3x1 لبن',
-            quantity: milkySum,
-            intPrice: (milkySum * 5),
-          );
+                  isInt: true,
+                  type: '3x1 لبن',
+                  quantity: milkySum,
+                  intPrice: (milkySum * 5),
+                );
           final juiceCard = (juiceSum == 0)
               ? SizedBox()
               : ReportCard(
-            isInt: true,
-            type: 'عصير',
-            quantity: juiceSum,
-            intPrice: (juiceSum * 5),
-          );
+                  isInt: true,
+                  type: 'عصير',
+                  quantity: juiceSum,
+                  intPrice: (juiceSum * 5),
+                );
+          final greenCard = (greenSum == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: false,
+                  type: 'شاى أخضر',
+                  quantity: greenSum,
+                  doublePrice: (greenSum * 3.5),
+                );
+          final goldCard = (goldSum == 0)
+              ? SizedBox()
+              : ReportCard(
+                  isInt: true,
+                  type: 'نسكافيه جولد',
+                  quantity: goldSum,
+                  intPrice: (goldSum * 4),
+                );
 //-------------------------------------------------------------------------
           return (totalSum == 0)
               ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 100,
-                  backgroundColor: Colors.yellow,
-                  child: Icon(
-                    Icons.warning,
-                    color: Colors.white,
-                    size: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      CircleAvatar(
+                        radius: 100,
+                        backgroundColor: Colors.yellow,
+                        child: Icon(
+                          Icons.warning,
+                          color: Colors.white,
+                          size: 100,
+                        ),
+                      ),
+                      Text(
+                        'لا توجد مبيعات حتى الآن',
+                        style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  'لا توجد مبيعات حتى الآن',
-                  style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.purple,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          )
+                )
               : ListView(
-            padding: EdgeInsets.all(15),
-            children: <Widget>[
-              sumCard,
-              teaCard,
-              nescafeCard,
-              coffeeCard,
-              blackCard,
-              mixCard,
-              teaMilkCard,
-              nescafeMilkCard,
-              bonjCard,
-              karkCard,
-              yansCard,
-              mintCard,
-              waterCard,
-              talkemaCard,
-              milkyCard,
-              juiceCard
-            ],
-          );
+                  padding: EdgeInsets.all(15),
+                  children: <Widget>[
+                    sumCard,
+                    teaCard,
+                    nescafeCard,
+                    coffeeCard,
+                    blackCard,
+                    mixCard,
+                    teaMilkCard,
+                    nescafeMilkCard,
+                    bonjCard,
+                    karkCard,
+                    yansCard,
+                    mintCard,
+                    waterCard,
+                    talkemaCard,
+                    milkyCard,
+                    juiceCard,
+                    greenCard,
+                    goldCard
+                  ],
+                );
         },
       ),
     );

@@ -1,57 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dbdob/widgets/confirm_order_dialog.dart';
+import 'package:dbdob/widgets/confirm_buy_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dbdob/widgets/connec_dialog.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as ntl;
 import 'package:intl/date_symbol_data_local.dart';
 
-class MakeOrderDialog extends StatefulWidget {
-  MakeOrderDialog({this.type});
+class MakeBuyDialog extends StatefulWidget {
+  MakeBuyDialog({this.type});
   final String type;
   @override
-  _MakeOrderDialogState createState() => _MakeOrderDialogState();
+  _MakeBuyDialogState createState() => _MakeBuyDialogState();
 }
 
-class _MakeOrderDialogState extends State<MakeOrderDialog> {
+class _MakeBuyDialogState extends State<MakeBuyDialog> {
   final _fireStore = Firestore.instance;
   int quant = 1;
   String myDate;
   //--------------------------------------------------------------
-  String type;
-  bool checked = false;
+  double total = 0.0;
+  double price=0.0;
   //--------------------------------------------------------------
-  void confirmOrder(String date,bool check,String type,int q) {
+  void confirmOrder(String date ,String type,int q,double price) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => ConfirmOrderDialog(
-        date: date,check: check,type: type,q: q,
+      builder: (BuildContext context) => ConfirmBuyDialog(
+        date: date,
+        type: type,
+        quantity: q,
+        price: price,
       ),
     );
   }
-
+  //--------------------------------------------------------------
   void connectDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) => ConnecDialog(),
     );
   }
-
+  //--------------------------------------------------------------
   getDate() {
     initializeDateFormatting("en", null).then((_) {
       var now = DateTime.now();
-      var formatter = DateFormat('d-M-y');
+      var formatter = ntl.DateFormat('d-M-y');
       myDate = formatter.format(now);
     });
   }
-
+  //--------------------------------------------------------------
   @override
   void initState() {
     getDate();
     super.initState();
   }
-
+  //--------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -110,47 +113,25 @@ class _MakeOrderDialogState extends State<MakeOrderDialog> {
           SizedBox(
             height: 20,
           ),
-          //----------------------------
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              (checked)
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.check_box,
-                        color: Colors.purple,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          checked = !checked;
-                        });
-                      },
-                    )
-                  : IconButton(
-                      icon: Icon(
-                        Icons.check_box_outline_blank,
-                        color: Colors.purple,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          checked = !checked;
-                        });
-                      },
-                    ),
-              SizedBox(
-                width: 20,
+          //----------------------------------
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: TextFormField(
+              textAlign: TextAlign.start,
+              onChanged: (value) {
+                setState(() {
+                  price = double.parse(value);
+                });
+              },
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "قم بادخال المبلغ",
+                labelText: "المبلغ",
               ),
-              Text(
-                'ضيافة',
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.purple,
-                ),
-              ),
-            ],
-          )
+            ),
+          ),
+          //-----------------------------------------
         ],
       ),
       elevation: 8.0,
@@ -179,23 +160,13 @@ class _MakeOrderDialogState extends State<MakeOrderDialog> {
 
             if ((connectivityResult == ConnectivityResult.mobile) ||
                 (connectivityResult == ConnectivityResult.wifi)) {
-                //add host when checked == true
-              if (checked == true) {
-                _fireStore.collection('$myDate host').add(
-                  {'type': widget.type, 'quantity': quant},
-                );
 
-              } else {
-                _fireStore.collection('$myDate').add(
-                  {
-                    'type': widget.type,
-                    'quantity': quant,
-                  },
+                _fireStore.collection('$myDate buy').add(
+                  {'type': widget.type, 'quantity': quant,'price':price},
                 );
-              }
               //-------------------------------------------
               Navigator.pop(context);
-              confirmOrder(myDate,checked,widget.type,quant);
+              confirmOrder(myDate,widget.type,quant,price);
             } else {
               Navigator.pop(context);
               connectDialog();
