@@ -4,6 +4,7 @@ import 'package:dbdob/screens/weekly_emp.dart';
 import 'package:dbdob/screens/weekly_host.dart';
 import 'package:dbdob/reusables/reusable_week_card.dart';
 
+
 class WeeklyReport extends StatefulWidget {
   WeeklyReport({this.sum, this.myList, this.hostSum, this.hostList});
   final double sum;

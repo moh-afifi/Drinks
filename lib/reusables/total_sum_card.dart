@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TotalSumCard extends StatelessWidget {
-  TotalSumCard({this.totalSum});
+  TotalSumCard({this.totalSum,this.label});
   final double totalSum;
+  final String label;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -16,21 +17,21 @@ class TotalSumCard extends StatelessWidget {
             Text(
               'جنيه  ',
               style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   color: Colors.purple,
                   fontWeight: FontWeight.bold),
             ),
             Text(
               totalSum.toString(),
               style: TextStyle(
-                  fontSize: 35,
+                  fontSize: 22,
                   color: Colors.purple,
                   fontWeight: FontWeight.bold),
             ),
             Text(
-              '  : الإجمالي',
+              label,
               style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   color: Colors.purple,
                   fontWeight: FontWeight.bold),
             ),

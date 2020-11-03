@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../reusables/reusable_report_card.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:dbdob/widgets/total_sum_card.dart';
 
-class DailyReport extends StatefulWidget {
-  DailyReport({this.date});
-  final String date;
+class TodayReport extends StatefulWidget {
   @override
-  _DailyReportState createState() => _DailyReportState();
+  _TodayReportState createState() => _TodayReportState();
 }
 
-class _DailyReportState extends State<DailyReport> {
+class _TodayReportState extends State<TodayReport> {
   final _fireStore = Firestore.instance;
   String type;
   int quantity, price;
+  String date;
   double totalSum = 0;
+
+  getDate() {
+    initializeDateFormatting("en", null).then((_) {
+      var now = DateTime.now();
+      var formatter = DateFormat('d-M-y');
+      setState(() {
+        date = formatter.format(now);
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    getDate();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +40,7 @@ class _DailyReportState extends State<DailyReport> {
         backgroundColor: Colors.purple,
         centerTitle: true,
         title: Text(
-          widget.date,
+          'التقرير اليومي',
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -31,7 +48,7 @@ class _DailyReportState extends State<DailyReport> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _fireStore.collection('${widget.date}').snapshots(),
+        stream: _fireStore.collection('$date').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -115,7 +132,9 @@ class _DailyReportState extends State<DailyReport> {
             } else if (type == 'نسكافيه بلبن') {
               nescafeMilkList.add(quantity);
               nescafeMilkSum = nescafeMilkList.reduce((a, b) => a + b);
-            } else if (type == 'تلقيمة') {
+            }
+            //----------------------------------------------------
+            else if (type == 'تلقيمة') {
               talkemaList.add(quantity);
               talkemaSum = talkemaList.reduce((a, b) => a + b);
             } else if (type == '3x1 لبن') {
@@ -125,6 +144,7 @@ class _DailyReportState extends State<DailyReport> {
               juiceList.add(quantity);
               juiceSum = juiceList.reduce((a, b) => a + b);
             }
+            //----------------------------------------------------
           }
           totalSum = teaSum * 3 +
               nescafeSum * 4 +
@@ -141,9 +161,12 @@ class _DailyReportState extends State<DailyReport> {
               talkemaSum * 5 +
               milkySum * 5 +
               juiceSum * 5;
+
+//          insertTotal();
 //----------------------------------------------------------------------------
           final sumCard = TotalSumCard(
             totalSum: totalSum,
+              label:"الاجمالي"
           );
 
           final teaCard = (teaSum == 0)
@@ -242,6 +265,7 @@ class _DailyReportState extends State<DailyReport> {
                   quantity: nescafeMilkSum,
                   intPrice: (nescafeMilkSum * 5),
                 );
+          //---------------------------------------------
           final talkemaCard = (talkemaSum == 0)
               ? SizedBox()
               : ReportCard(
@@ -282,7 +306,7 @@ class _DailyReportState extends State<DailyReport> {
                         ),
                       ),
                       Text(
-                        'لا توجد مبيعات لهذا اليوم',
+                        'لا توجد مبيعات حتى الآن',
                         style: TextStyle(
                             fontSize: 25,
                             color: Colors.purple,

@@ -144,6 +144,7 @@ class _HostDailyReportState extends State<HostDailyReport> {
 //----------------------------------------------------------------------------
           final sumCard = TotalSumCard(
             totalSum: totalSum,
+              label:"الاجمالي"
           );
 
           final teaCard = (teaSum == 0)
